@@ -585,6 +585,13 @@ fn show_trace<E: StdError>(e: E) {
 
 struct Interpreter;
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+enum InterpreterErrorKind {
+    DivisionByZero,
+}
+
+type InterpreterError = Annot<InterpreterErrorKind>;
+
 impl Interpreter {
     pub fn new() -> Self {
         Interpreter
