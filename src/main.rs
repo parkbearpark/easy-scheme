@@ -295,6 +295,23 @@ impl BinOp {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[allow(dead_code)]
+enum ParseError {
+    /// 予期しないトークンがきた
+    UnexpectedToken(Token),
+    /// 式を期待していたのに式でないものがきた
+    NotExpression(Token),
+    /// 演算子を期待していたのに演算子でないものがきた
+    NotOperator(Token),
+    /// かっこが閉じられていない
+    UnclosedOpenParen(Token),
+    /// 式の解析が終わったのにトークンが残っている
+    RedundantExpression(Token),
+    /// パース途中で入力が終わった
+    Eof,
+}
+
 fn parse(tokens: Vec<Token>) -> Result<Ast, ParseError> {
     let mut tokens = tokens.into_iter().peekable();
     let ret = parse_expr(&mut tokens)?;
