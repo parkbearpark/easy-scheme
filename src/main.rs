@@ -174,3 +174,12 @@ fn recognize_many(input: &[u8], mut pos: usize, mut f: impl FnMut(u8) -> bool) -
 
     pos
 }
+
+fn prompt(s: &str) -> io::Result<()> {
+    use std::io::{stdout, Write};
+    let stdout = stdout();
+    let mut stdout = stdout.lock();
+    stdout.write(s.as_bytes())?;
+    stdout.flush()
+}
+
