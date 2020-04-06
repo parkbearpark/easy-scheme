@@ -643,3 +643,68 @@ impl Interpreter {
     }
 }
 
+impl fmt::Display for InterpreterError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::InterpreterErrorKind::*;
+        match self.value {
+            DivisionByZero => write!(f, "division by zero"),
+        }
+    }
+}
+
+impl StdError for InterpreterError {
+    fn description(&self) -> &str {
+        use self::InterpreterErrorKind::*;
+        match self.value {
+            DivisionByZero => "the right hand expression of the division evaluates to zero",
+        }
+    }
+}
+
+impl InterpreterError {
+    fn show_diagnostic(&self, input: &str) {
+        // エラー情報を簡単に表示し
+        eprintln!("{}", self);
+        // エラー位置を指示する
+        print_annot(input, self.loc.clone());
+    }
+}
+
+fn main() {
+    use std::io::{stdin, BufRead, BufReader};
+
+    let mut interp = Interpreter::new();
+
+    let stdin = stdin();
+    let stdin = stdin.lock();
+    let stdin = BufReader::new(stdin);
+    let mut lines = stdin.lines();
+
+    loop {
+        prompt("> ").unwrap();
+
+        if let Some(Ok(line)) = lines.next() {
+            let ast = match line.parse::<Ast>() {
+                Ok(ast) => ast,
+                Err(e) => {
+                    e.show_diagnostic(&line);
+                    show_trace(e);
+                    continue;
+                }
+            };
+
+            let n = match interp.eval(&ast) {
+                Ok(n) => n,
+                Err(e) => {
+                    e.show_diagnostic(&line);
+                    show_trace(e);
+                    continue;
+                }
+            };
+
+            println!("{}", n);
+        } else {
+            break;
+        }
+    }
+}
