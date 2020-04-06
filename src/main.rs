@@ -1,3 +1,9 @@
+use std::error::Error as StdError;
+use std::fmt;
+use std::io;
+use std::iter::Peekable;
+use std::str::FromStr;
+
 /// 位置情報
 /// Loc(4, 6) => 入力文字の5~7文字目
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
