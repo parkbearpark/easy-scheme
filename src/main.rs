@@ -81,6 +81,25 @@ impl Token {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+enum LexErrorKind {
+    InvalidChar(char),
+    Eof,
+}
+
+/// ErrorKind にアノテーションを付けたものを LexError として定義
+type LexError = Annot<LexErrorKind>;
+
+impl LexError {
+    fn invalid_char(c: char, loc: Loc) -> Self {
+        LexError::new(LexErrorKind::InvalidChar(c), loc)
+    }
+
+    fn eof(loc: Loc) -> Self {
+        LexError::new(LexErrorKind::Eof, loc)
+    }
+}
+
 /// 字句解析器
 fn lex(input: &str) -> Result<Vec<Token>, LexError> {
     let mut tokens = Vec::new(); // 解析結果を保存
